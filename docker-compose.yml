@@ -1,0 +1,53 @@
+version: '3'
+services: 
+    web:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        image: hitalos/laravel:latest
+        container_name: web
+        restart: unless-stopped
+        tty: true
+        ports:
+            - 8081:80
+        volumes:
+            - ./:/var/www
+        networks:
+            - app-network
+        environment:
+            DB_HOST: db
+            DB_DATABASE: dbname
+            DB_USERNAME: username
+            DB_PASSWORD: p455w0rd
+            DB_CONNECTION: pgsql
+    postgres:
+        image: postgres
+        container_name: postgresdb
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3306:3306"
+        environment:
+            - POSTGRES_PASSWORD=p0r74lA63nt3
+        volumes:
+            - ./postgresdb/data:/var/lib/postgresql/data
+        networks:
+            - app-network
+    mongo:
+        image: mongo
+        restart: unless-stopped
+        tty: true
+        container_name: mongodb
+        ports:
+            - "2717:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: example
+        volumes:
+            - ./mongodb/data:/data/db
+        networks: 
+            - app-network
+        
+networks: 
+    app-network:
+        driver: bridge
